@@ -1,22 +1,33 @@
-import React, { useEffect, useState } from 'react'
-import MovieCard from './ui/MovieCard';
+import React, { useEffect } from "react";
+import MovieCard from "./ui/MovieCard";
+import { fetchMovies, changePage } from "../slices/moviesSlice";
+import { useSelector, useDispatch } from "react-redux";
 
-export default function MovieList() {
+export default function MovieList(props) {
+    const { movies, page } = useSelector((state) => state.movies);
+    const dispatch = useDispatch();
 
-  const [movies, setMovies] = useState([]);
-  const API_URL = 'https://api.themoviedb.org/3/discover/movie?api_key=9b153f4e40437e115298166e6c1b997c';
+    useEffect(() => {
+        dispatch(fetchMovies(page));
+        // eslint-disable-next-line
+    }, [page]);
 
-  let getData = () => {
-    console.log('get data called')
-    fetch(API_URL).then(data => data.json()).then(data => setMovies(data.results));
-  }
-  useEffect(() => {
-    getData();
-  }, [])
-
-  return (
-    <div className='list-container'>
-      {movies.length === 0 ? (<h1>loading...</h1>) : movies.map(movie => <MovieCard movie={movie} />)}
-    </div>
-  )
+    return (
+        <div className="list-container">
+            {movies.length === 0 ? (
+                <h1>loading...</h1>
+            ) : (
+                movies.map((movie) => (
+                    <MovieCard
+                        key={movie.id}
+                        movie={movie}
+                    />
+                ))
+            )}
+            <div className="buttons-div">
+                <button className="page-button" onClick={() => page > 1 && dispatch(changePage(-1))}>Prev</button>
+                <button className="page-button" onClick={() => page < 1000 && dispatch(changePage(1))}>Next</button>
+            </div>
+        </div>
+    );
 }

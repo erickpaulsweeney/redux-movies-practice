@@ -50,6 +50,7 @@ body {
   flex-wrap: wrap;
   justify-content: center;
   /* align-items: center; */
+  position: relative;
 }
 
 
@@ -143,4 +144,11 @@ img.movie-poster {
 
 p.release-date {
   margin: 12px 0;
+}
+
+.buttons-div {
+    position: fixed;
+    right: 1em;
+    bottom: 1em;
+    display: flex;
 }

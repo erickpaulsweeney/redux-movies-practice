@@ -1,37 +1,44 @@
-import React, { useState } from 'react'
-import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { BASE_URL } from './ui/MovieCard';
+import React from "react";
+import { useEffect } from "react";
+import { BASE_URL } from "./ui/MovieCard";
+import { fetchDetails } from "../slices/moviesSlice";
+import { useParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { addToWatchList } from "../slices/moviesSlice";
 
-export default function Details() {
-    const [movie, setMovie] = useState(null);
-    const params = useParams();
-    const API_URL = `https://api.themoviedb.org/3/movie/${params.id}?api_key=9b153f4e40437e115298166e6c1b997c`;
-    
+export default function Details(props) {
+    const { id } = useParams();
+    const { selected } = useSelector(state => state.movies);
+    const dispatch = useDispatch();
 
-    let getData = () => {
-        fetch(API_URL).then(data => data.json()).then(data => setMovie(data));
-    }
     useEffect(() => {
-        getData();
+        dispatch(fetchDetails(id));
+        // eslint-disable-next-line
     }, []);
+
     return (
-        <div className='details-container'>
-            {movie === null
-                ? <h2 className="center">Loading...</h2>
-                :
+        <div className="details-container">
+            {selected === null ? (
+                <h2 className="center">Loading...</h2>
+            ) : (
                 <>
                     <div className="left">
-                        <img src={BASE_URL + movie.poster_path} alt={movie.title} className="movie-poster" />
+                        <img
+                            src={BASE_URL + selected.poster_path}
+                            alt={selected.title}
+                            className="movie-poster"
+                        />
                     </div>
                     <div className="right">
-                        <h1 className="title">{movie.original_title}</h1>
-                        <p className="desc">{movie.overview}</p>
-                        <p className="release-date">Release Date: {movie.release_date}</p>
-                        <button>Add to Watchlist</button>
+                        <h1 className="title">{selected.original_title}</h1>
+                        <p className="desc">{selected.overview}</p>
+                        <p className="release-date">
+                            Release Date: {selected.release_date}
+                        </p>
+                        <button onClick={() => dispatch(addToWatchList(selected))}>Add to Watchlist</button>
                     </div>
                 </>
-            }
+            )}
         </div>
-    )
+    );
 }
